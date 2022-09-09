@@ -10,6 +10,7 @@ namespace UploadPatientVitalSignInfo.Model
     {
         public string ptEncounterId { get; set; }
         public string dbName { get; set; }
+        public DateTime endDate { get; set; }
     }
 
     public class IccaUserModel

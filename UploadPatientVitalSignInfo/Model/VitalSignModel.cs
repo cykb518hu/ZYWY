@@ -8,6 +8,15 @@ namespace UploadPatientVitalSignInfo.Model
 {
     public class VitalSignModel
     {
+
+        /// <summary>
+        /// 入科时间
+        /// </summary>
+        public string RKSJ { get; set; }
+        /// <summary>
+        /// 入院时间
+        /// </summary>
+        public string RYSJ { get; set; }
         /// <summary>
         /// 患者首页序号int类型
         /// </summary>
@@ -32,6 +41,11 @@ namespace UploadPatientVitalSignInfo.Model
         /// 记录时间即实际测量时间 yyyyMMddHH:mm:ss
         /// </summary>
         public string JLSJ { get; set; }
+
+        /// <summary>
+        /// 护理单时间点char(16),yyyyMMddHH:mm:ss
+        /// </summary>
+        public string LRRQ { get; set; }
         /// <summary>
         /// 操作员工号
         /// </summary>
@@ -59,41 +73,26 @@ namespace UploadPatientVitalSignInfo.Model
         /// <summary>
         /// 呼吸
         /// </summary>
-        public int HX { get; set; }
+        public int? HX { get; set; }
+
         /// <summary>
-        /// 脉搏
+        /// 心率
         /// </summary>
-        public int MB { get; set; }
+        public int? XL { get; set; }
 
         /// <summary>
         /// 体温
         /// </summary>
-        public double TW { get; set; }
+        public float? TW { get; set; }
 
         /// <summary>
         /// int类型体温测量方式0:口表  1:腋表 2:肛温 3;耳温   
         /// </summary>
-        public int  CLFS { get; set; }
+        public int? CLFS { get; set; }
 
-        /// <summary>
-        /// 血糖
-        /// </summary>
-        public double XT { get; set; }
 
-        /// <summary>
-        /// 收缩压
-        /// </summary>
-        public int SSY { get; set; }
-
-        /// <summary>
-        /// 舒张压
-        /// </summary>
-        public int SZY { get; set; }
-
-        /// <summary>
-        /// 平均圧
-        /// </summary>
-        public int PJY { get; set; }
+        //血压
+        public string XY { get; set; }
 
         /// <summary>
         /// 身高
@@ -101,45 +100,63 @@ namespace UploadPatientVitalSignInfo.Model
         public int SG { get; set; }
 
         /// <summary>
-        /// 血氧
-        /// </summary>
-        public int XYBHD { get; set; }
-
-        /// <summary>
         /// 体重
         /// </summary>
-        public double TZ { get; set; }
+        public float? TZ { get; set; }
 
-
-
-        /// <summary>
-        /// 心率
-        /// </summary>
-        public int XL { get; set; }
-
+       
         /// <summary>
         /// 大便次数,（string类型）例如："4/E"、"2/E"或"1"
         /// </summary>
-        public int DBCS { get; set; }
+        public string DBCS { get; set; }
 
         /// <summary>
         /// 小便值
         /// </summary>
-        public float NL { get; set; }
+        public string NL { get; set; }
 
         /// <summary>
         /// 总入量
         /// </summary>
-        public float RLZH { get; set; }
+        public string RLZH { get; set; }
 
         /// <summary>
         /// 总出量
         /// </summary>
-        public float CLZH { get; set; }
+       // public string CLZH { get; set; }
 
         /// <summary>
         /// 上传体温单或护理单 0：上传到体温单
         /// </summary>
-        public float SCBD { get; set; }
+        public int SCBD { get; set; }
+
+        /// <summary>
+        /// 上标
+        /// </summary>
+        public int? SBSM { get; set; }
+        /// <summary>
+        /// 上标
+        /// </summary>
+        public string SBSJ { get; set; }
+        /// <summary>
+        /// 下标
+        /// </summary>
+        public string sXbsm { get; set; }
+
+        /// <summary>
+        /// 体重状态 卧床
+        /// </summary>
+        public string sPf { get; set; }
+
+
+        /// <summary>
+        /// 药物过敏
+        /// </summary>
+        public string YWGM2 { get; set; }
+
+        /// <summary>
+        /// 其他 胃肠减压+引流量
+        /// </summary>
+        public string sBw { get; set; }
     }
 }

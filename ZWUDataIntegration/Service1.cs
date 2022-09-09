@@ -109,10 +109,20 @@ namespace ZWUDataIntegration
                 if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
                     //往目标数据库插入数据
-                    if (InsertToTargetTable(view, ds.Tables[0]))
-                    {                       
-                        LogUtil.CommonLog($"{view.ViewName} view 同步到目标数据表:{view.TargetTableName}成功，同步数据条数:{ds.Tables[0].Rows.Count},同步时间段为:{view.SyncTime.ToString("yyyy-MM-dd HH:mm:ss")}到{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
-                       
+                    if (view.ViewName == "v_SJCK_DOCUMENT_HLBD")
+                    {
+                        //这个view 特殊处理
+                        if(InsertToTargetTableSingle(view, ds.Tables[0]))
+                        {
+                            LogUtil.CommonLog($"{view.ViewName} view 同步到目标数据表:{view.TargetTableName}成功，同步数据条数:{ds.Tables[0].Rows.Count},同步时间段为:{view.SyncTime.ToString("yyyy-MM-dd HH:mm:ss")}到{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
+                        }
+                    }
+                    else
+                    {
+                        if (InsertToTargetTable(view, ds.Tables[0]))
+                        {
+                            LogUtil.CommonLog($"{view.ViewName} view 同步到目标数据表:{view.TargetTableName}成功，同步数据条数:{ds.Tables[0].Rows.Count},同步时间段为:{view.SyncTime.ToString("yyyy-MM-dd HH:mm:ss")}到{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
+                        }
                     }
                 }
                 else
@@ -154,7 +164,7 @@ namespace ZWUDataIntegration
         }
         public DataSet GetViewDataDetail(SyncViewModel syncView)
         {
-            LogUtil.DebugLog($"开始获取view{syncView.ViewName}数据");
+            LogUtil.DebugLog($"开始获取view{syncView.ViewName}数据," + syncView.SyncTime.ToString("yyyy-MM-dd HH:mm:ss"));
 
             var result = new DataSet();
             using (SqlConnection connection = new SqlConnection(config.IccaConnectionString))
@@ -172,6 +182,37 @@ namespace ZWUDataIntegration
                 {
                     LogUtil.ErrorLog($"获取{syncView.ViewName}view数据详情报错:" + ex.ToString());
                 }
+            }
+            return result;
+        }
+
+        public bool InsertToTargetTableSingle(SyncViewModel syncView, DataTable table)
+        {
+            bool result = true;
+            LogUtil.DebugLog($"开始同步view{syncView.ViewName},数据条数:{table.Rows.Count}，同步开始时间:{syncView.SyncTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(config.PingTaiConnectionString))
+                {
+                    connection.Open();
+                    for (var i = 0; i < table.Rows.Count; i++)
+                    {
+                        var queryString = $"select blh from IN_ICU_DAT_HLBD where blh='{table.Rows[i]["blh"]}' and wdrq='{table.Rows[i]["wdrq"]}'";
+                        var command = new SqlCommand(queryString, connection);
+                        var obj = command.ExecuteScalar();
+                        if(obj == null)
+                        {
+                            var sql = $"insert into IN_ICU_DAT_HLBD(jzlsh,blh,wdrq,bt,url)values('{table.Rows[i]["jzlsh"]}','{table.Rows[i]["blh"]}','{table.Rows[i]["wdrq"]}','{table.Rows[i]["bt"]}','{table.Rows[i]["url"]}')";
+                            command = new SqlCommand(sql, connection);
+                            command.ExecuteNonQuery();
+                        }
+                    }
+                    
+                }
+            }
+            catch (Exception ex)
+            {
+                LogUtil.ErrorLog($"InsertToTargetTableSingle报错" + ex.ToString());
             }
             return result;
         }
@@ -203,7 +244,7 @@ namespace ZWUDataIntegration
                             LogUtil.DebugLog(sourceName + "不存在目标表");
                         }
                     }
-                    foreach(var r in removeColumns)
+                    foreach (var r in removeColumns)
                     {
                         table.Columns.Remove(r);
                     }
@@ -216,9 +257,9 @@ namespace ZWUDataIntegration
                         {
                             if (!tempDs.Tables[0].Columns[i].AllowDBNull)
                             {
-                                for( int j = 0; j < table.Rows.Count; j++)
+                                for (int j = 0; j < table.Rows.Count; j++)
                                 {
-                                    if (DBNull.Value== table.Rows[j][targetName])
+                                    if (DBNull.Value == table.Rows[j][targetName])
                                     {
                                         switch (dataType)
                                         {
@@ -241,7 +282,7 @@ namespace ZWUDataIntegration
                                             case "String":
                                                 table.Rows[j][targetName] = " ";
                                                 break;
-                                        }                                                      
+                                        }
                                     }
                                 }
                             }
@@ -253,11 +294,11 @@ namespace ZWUDataIntegration
                     LogUtil.ErrorLog($"检查列名报错" + ex.ToString());
                 }
             }
-
-            using (SqlBulkCopy sqlBulk=new SqlBulkCopy(config.PingTaiConnectionString))
+            using (SqlBulkCopy sqlBulk = new SqlBulkCopy(config.PingTaiConnectionString))
             {
                 try
                 {
+
                     sqlBulk.BatchSize = 5000;
                     sqlBulk.BulkCopyTimeout = 60;
                     sqlBulk.DestinationTableName = syncView.TargetTableName;
@@ -267,12 +308,13 @@ namespace ZWUDataIntegration
                     }
                     sqlBulk.WriteToServer(table);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     LogUtil.ErrorLog($"插入到目标数据库{syncView.TargetTableName}报错:" + ex.ToString());
                     result = false;
                 }
             }
+
             return result;
         }
 
