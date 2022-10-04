@@ -17,13 +17,16 @@ namespace UploadPatientVitalSignInfo
         static void Main()
         {
 
-           
+            //var dt = Convert.ToDateTime("2022-09-13 09:08").Date;
+            //Service1 service1 = new Service1();
+            //var r = service1.GetUploadTime(dt);
+
 
              Service1 service1 = new Service1();
-             service1.BuildPatientData();
+              service1.BuildPatientData();
 
             //var date = Convert.ToDateTime("2022-08-28 10:10");
-           // var str=service1.DateToChinese(date);
+            // var str=service1.DateToChinese(date);
             //ServiceBase[] ServicesToRun;
             //ServicesToRun = new ServiceBase[]
             //{

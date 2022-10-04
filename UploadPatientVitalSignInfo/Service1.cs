@@ -1103,7 +1103,7 @@ namespace UploadPatientVitalSignInfo
                             //第一条记录不能是停止记录
                             if (ventList.FirstOrDefault(x => x.ItemName == "InvasiveVentilationEndTime_DT" && x.ChartTime == item.ChartTime) == null)
                             {
-                                var uploadTime = GetUploadTime(item.ChartTime);
+                                var uploadTime = GetUploadTime(item.ChartTime.Date);
                                 var record = new VitalSignModel();
                                 record.ZYRQ = uploadTime.ToString("yyyyMMdd");
                                 record.CJSJ = uploadTime.ToString("HH:mm");
